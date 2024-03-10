@@ -1,2 +1,3 @@
 from .drone_routes import get_all_drones, get_drone_by_id, get_drones_by_status, add_new_drone, update_drone_by_id, delete_drone_by_id
 from .trajectory_routes import get_all_trajectories, get_trajectory_by_id, get_trajectory_by_type, add_new_trajectory, update_trajectory_by_id, delete_trajectory_by_id
+from .mission_routes import get_all_missions, get_mission_by_id, get_mission_by_highest_priority, add_new_mission, update_mission_by_id, delete_mission_by_id
