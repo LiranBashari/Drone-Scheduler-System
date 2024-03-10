@@ -1,1 +1,1 @@
-from .drone_routes import get_all_drones
+from .drone_routes import get_all_drones, add_new_drone

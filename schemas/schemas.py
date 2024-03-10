@@ -3,6 +3,7 @@ from models.trajectory import TrajectoryModel
 from models.mission import MissionModel
 from models.schedule import ScheduleModel
 
+# -------------------------------Drone-------------------------------
 def individual_drone_serial(drone) -> dict:
     return {
         "id": str(drone["_id"]),
@@ -13,11 +14,13 @@ def individual_drone_serial(drone) -> dict:
     }
 
 
-def list_drone_serial(drones) -> list:
+def list_drone_serial(drones: list[DroneModel]) -> list:
     return [individual_drone_serial(d) for d in drones]
 
 
-def convert_trajectory_to_schema(trajectory: TrajectoryModel) -> dict:
+
+# -------------------------------Trajectory-------------------------------
+def individual_trajectory_serial(trajectory: TrajectoryModel) -> dict:
     return {
         'id': str(trajectory.id),
         'description': trajectory.description,
@@ -25,7 +28,13 @@ def convert_trajectory_to_schema(trajectory: TrajectoryModel) -> dict:
         'number_of_products': trajectory.number_of_products
     }
 
-def convert_mission_to_schema(mission: MissionModel) -> dict:
+
+def list_trajectory_serial(trajectories: list[TrajectoryModel]) -> list:
+    return [individual_trajectory_serial(t) for t in trajectories]
+
+
+# -------------------------------Mission-------------------------------
+def individual_mission_serial(mission: MissionModel) -> dict:
     return {
         'id': str(mission.id),
         'trajectory_id': mission.trajectory_id,
@@ -33,7 +42,13 @@ def convert_mission_to_schema(mission: MissionModel) -> dict:
         'priority': mission.priority
     }
 
-def convert_schedule_to_schema(schedule: ScheduleModel) -> dict:
+
+def list_mission_serial(missions: list[MissionModel]) -> list:
+    return [individual_mission_serial(m) for m in missions]
+
+
+# -------------------------------Schedule-------------------------------
+def individual_schedule_serial(schedule: ScheduleModel) -> dict:
     return {
         'id': str(schedule.id),
         'drone_id': schedule.drone_id,
@@ -42,3 +57,7 @@ def convert_schedule_to_schema(schedule: ScheduleModel) -> dict:
         'end_time': schedule.end_time,
         'status': schedule.status
     }
+
+
+def list_schedule_serial(schedules: list[ScheduleModel]) -> list:
+    return [individual_schedule_serial(s) for s in schedules]

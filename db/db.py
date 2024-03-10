@@ -1,9 +1,13 @@
 from pymongo.mongo_client import MongoClient
+import os
+from dotenv import load_dotenv
 
-uri = "mongodb+srv://liranbashari:Liran123!@cluster0.ncbdor0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+load_dotenv()
+
+mongo_uri = os.getenv("MONGO_URI")
 
 # Create a new client and connect to the server
-client = MongoClient(uri)
+client = MongoClient(mongo_uri)
 
 
 db = client["WDS-DB"]
