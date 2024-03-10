@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from db.db import client
+from routes import drone_routes
 
 app = FastAPI()
 
@@ -11,7 +12,7 @@ except Exception as e:
     print(e)
 
 # Include routes from different files
-# app.include_router(drone_routes.router, prefix="/drones")
+app.include_router(drone_routes.route, prefix="/drones")
 # app.include_router(trajectory_routes.router)
 # app.include_router(mission_routes.router)
 # app.include_router(schedule_routes.router)

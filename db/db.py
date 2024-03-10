@@ -5,4 +5,11 @@ uri = "mongodb+srv://liranbashari:Liran123!@cluster0.ncbdor0.mongodb.net/?retryW
 # Create a new client and connect to the server
 client = MongoClient(uri)
 
-data_base = client["WDS DB"]
+
+db = client["WDS-DB"]
+
+# 4 collections
+drone_collection = db["Drone-Collection"]
+trajectory_collection = db["Trajectory-Collection"]
+mission_collection = db["Mission-Collection"]
+schedule_collection = db["Schedule-Collection"]

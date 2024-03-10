@@ -3,14 +3,19 @@ from models.trajectory import TrajectoryModel
 from models.mission import MissionModel
 from models.schedule import ScheduleModel
 
-def convert_drone_to_schema(drone: DroneModel) -> dict:
+def individual_drone_serial(drone) -> dict:
     return {
-        'id': str(drone.id),
-        'name': drone.name,
-        'status': drone.status,
-        'current_mission_id': drone.current_mission_id,
-        'possible_missions_ids': drone.possible_missions_ids
+        "id": str(drone["_id"]),
+        "name": drone["name"],
+        "status": drone["status"],
+        "current_mission_id": drone["current_mission_id"],
+        "possible_missions_ids": drone["possible_missions_ids"]
     }
+
+
+def list_drone_serial(drones) -> list:
+    return [individual_drone_serial(d) for d in drones]
+
 
 def convert_trajectory_to_schema(trajectory: TrajectoryModel) -> dict:
     return {
