@@ -22,10 +22,10 @@ def list_drone_serial(drones: list[DroneModel]) -> list:
 # -------------------------------Trajectory-------------------------------
 def individual_trajectory_serial(trajectory: TrajectoryModel) -> dict:
     return {
-        'id': str(trajectory.id),
-        'description': trajectory.description,
-        'type': trajectory.type,
-        'number_of_products': trajectory.number_of_products
+        "id": str(trajectory["_id"]),
+        "description": trajectory["description"],
+        "type": trajectory["type"],
+        "number_of_products": trajectory["number_of_products"]
     }
 
 
@@ -36,10 +36,10 @@ def list_trajectory_serial(trajectories: list[TrajectoryModel]) -> list:
 # -------------------------------Mission-------------------------------
 def individual_mission_serial(mission: MissionModel) -> dict:
     return {
-        'id': str(mission.id),
-        'trajectory_id': mission.trajectory_id,
-        'duration': mission.duration,
-        'priority': mission.priority
+        "id": str(mission["_id"]),
+        "trajectory_id": mission["trajectory_id"],
+        "duration": mission["duration"],
+        "priority": mission["priority"]
     }
 
 
@@ -50,12 +50,12 @@ def list_mission_serial(missions: list[MissionModel]) -> list:
 # -------------------------------Schedule-------------------------------
 def individual_schedule_serial(schedule: ScheduleModel) -> dict:
     return {
-        'id': str(schedule.id),
-        'drone_id': schedule.drone_id,
-        'mission_id': schedule.mission_id,
-        'start_time': schedule.start_time,
-        'end_time': schedule.end_time,
-        'status': schedule.status
+        "id": str(schedule["_id"]),
+        "drone_id": schedule["drone_id"],
+        "mission_id": schedule["mission_id"],
+        "start_time": schedule["start_time"],
+        "end_time": schedule["end_time"],
+        "status": schedule["status"]
     }
 
 
