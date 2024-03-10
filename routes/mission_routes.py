@@ -49,7 +49,7 @@ async def add_new_mission(mission: MissionModel):
 async def update_mission_by_id(id: str, mission: MissionModel):
     result = mission_collection.find_one_and_update({"_id": ObjectId(id)}, {"$set": dict(mission)})
     if not result:
-        raise HTTPException(status_code=404, detail="Drone not found")
+        raise HTTPException(status_code=404, detail="Mission not found")
 
 
 
@@ -58,4 +58,4 @@ async def update_mission_by_id(id: str, mission: MissionModel):
 async def delete_mission_by_id(id: str):
     result = mission_collection.find_one_and_delete({"_id": ObjectId(id)})
     if not result:
-        raise HTTPException(status_code=404, detail="Drone not found")
+        raise HTTPException(status_code=404, detail="Mission not found")

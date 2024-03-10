@@ -23,7 +23,7 @@ async def get_trajectory_by_id(id: str):
     if trajectory:
         return trajectory
     else:
-        raise HTTPException(status_code=404, detail="Drone not found")
+        raise HTTPException(status_code=404, detail="Trajectory not found")
 
 
 
@@ -52,7 +52,7 @@ async def add_new_trajectory(trajectory: TrajectoryModel):
 async def update_trajectory_by_id(id: str, trajectory: TrajectoryModel):
     result = trajectory_collection.find_one_and_update({"_id": ObjectId(id)}, {"$set": dict(trajectory)})
     if not result:
-        raise HTTPException(status_code=404, detail="Drone not found")
+        raise HTTPException(status_code=404, detail="Trajectory not found")
 
 
 
@@ -61,4 +61,4 @@ async def update_trajectory_by_id(id: str, trajectory: TrajectoryModel):
 async def delete_trajectory_by_id(id: str):
     result = trajectory_collection.find_one_and_delete({"_id": ObjectId(id)})
     if not result:
-        raise HTTPException(status_code=404, detail="Drone not found")
+        raise HTTPException(status_code=404, detail="Trajectory not found")

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from db.db import client
-from routes import drone_routes, trajectory_routes, mission_routes
+from routes import drone_routes, trajectory_routes, mission_routes, schedule_routes
 
 app = FastAPI()
 
@@ -15,4 +15,4 @@ except Exception as e:
 app.include_router(drone_routes.route, prefix="/drones")
 app.include_router(trajectory_routes.route, prefix="/trajectory")
 app.include_router(mission_routes.route, prefix="/mission")
-# app.include_router(schedule_route.route)
+app.include_router(schedule_routes.route, prefix="/schedule")
