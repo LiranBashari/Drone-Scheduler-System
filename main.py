@@ -11,7 +11,7 @@ try:
 except Exception as e:
     print(e)
 
-# Include routes from different files
+
 app.include_router(drone_routes.route, prefix="/drones")
 app.include_router(trajectory_routes.route, prefix="/trajectory")
 app.include_router(mission_routes.route, prefix="/mission")

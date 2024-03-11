@@ -4,6 +4,7 @@ from db.db import schedule_collection
 from models.schedule import ScheduleModel
 from schemas.schemas import list_schedule_serial
 from bson import ObjectId
+from datetime import datetime
 
 route = APIRouter()
 
@@ -28,7 +29,7 @@ async def get_schedule_by_id(id: str):
 
 
 @route.get('/drones/{id}')
-async def get_schedules_by_drone_id(id: str):
+async def get_schedules_by_drone_id(id: int):
     try:
         schedules = list_schedule_serial(schedule_collection.find({"drone_id": id}))
         return schedules
@@ -38,7 +39,7 @@ async def get_schedules_by_drone_id(id: str):
 
 
 @route.get('/missions/{id}')
-async def get_schedules_by_mission_id(id: str):
+async def get_schedules_by_mission_id(id: int):
     try:
         schedules = list_schedule_serial(schedule_collection.find({"mission_id": id}))
         return schedules
@@ -47,10 +48,12 @@ async def get_schedules_by_mission_id(id: str):
 
 
 
-@route.get('/range')
+@route.post('/range')
 async def get_schedules_within_range(start_date: str, end_date: str):
     try:
-        schedules = list_schedule_serial(schedule_collection.find({"start_date": {"$gte": start_date}, "end_date": {"$lte": end_date}}))
+        start_datetime = datetime.strptime(start_date, "%Y-%m-%dT%H:%M:%S.%f")
+        end_datetime = datetime.strptime(end_date, "%Y-%m-%dT%H:%M:%S.%f")
+        schedules = list_schedule_serial(schedule_collection.find({"start_time": {"$gte": start_datetime}, "end_time": {"$lte": end_datetime}}))
         return schedules
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
