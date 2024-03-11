@@ -10,8 +10,7 @@ route = APIRouter()
 @route.get('/')
 async def get_all_drones():
     try:
-        drones = list_drone_serial(drone_collection.find())
-        return drones
+        return list_drone_serial(drone_collection.find())
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
 

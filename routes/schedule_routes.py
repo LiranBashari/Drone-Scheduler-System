@@ -11,8 +11,7 @@ route = APIRouter()
 @route.get('/')
 async def get_all_schedules():
     try:
-        schedules = list_schedule_serial(schedule_collection.find())
-        return schedules
+        return list_schedule_serial(schedule_collection.find())
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
@@ -45,6 +44,16 @@ async def get_schedules_by_mission_id(id: int):
         return schedules
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
+    
+
+
+@route.get('/status/{status}')
+async def get_schedules_by_status(status: str):
+    try:
+        schedules = list_schedule_serial(schedule_collection.find({"status": status}))
+        return schedules
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
 
@@ -63,6 +72,26 @@ async def get_schedules_within_range(start_date: str, end_date: str):
 @route.post('/add')
 async def add_new_schedule(schedule: ScheduleModel):
     try:
+        # Check if the drone is already booked for another mission during the same time frame
+        overlapping_missions = schedule_collection.find({
+            "drone_id": schedule.drone_id,
+            "start_time": {"$lte": schedule.end_time},
+            "end_time": {"$gte": schedule.start_time}
+        })
+
+        if overlapping_missions.count() > 0:
+            raise HTTPException(status_code=409, detail="Drone already booked for another mission")
+        
+        # "mission firing" mechanism - Update the drone's status in the database
+        schedule_collection.update_one(
+            {"drone_id": schedule.drone_id, "start_time": schedule.start_time},
+            {"$set": {"status": "on-mission"}}
+        )
+
+        #  A notification when scheduled drone is going on its mission
+        print(f"Alert: Drone {schedule.drone_id} is going on a mission at {schedule.start_time}")
+        
+        # Insert the new mission into the database
         schedule_collection.insert_one(dict(schedule))
     except ValidationError as e:
         raise HTTPException(status_code=422, detail="Validation Error: " + str(e))

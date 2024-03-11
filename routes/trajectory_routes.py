@@ -10,8 +10,7 @@ route = APIRouter()
 @route.get('/')
 async def get_all_trajectories():
     try: 
-        trajectories = list_trajectory_serial(trajectory_collection.find())
-        return trajectories
+        return list_trajectory_serial(trajectory_collection.find())
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
@@ -19,7 +18,7 @@ async def get_all_trajectories():
 
 @route.get('/{id}')
 async def get_trajectory_by_id(id: str):
-    trajectory = list_trajectory_serial(trajectory_collection.find({"_id": ObjectId(id)}))
+    trajectory = trajectory_collection.find({"_id": ObjectId(id)})
     if trajectory:
         return trajectory
     else:
@@ -54,6 +53,13 @@ async def update_trajectory_by_id(id: str, trajectory: TrajectoryModel):
     if not result:
         raise HTTPException(status_code=404, detail="Trajectory not found")
 
+
+
+@route.put("/update/products/{id}")
+async def update_trajectory_products_by_id(id: str, trajectory: TrajectoryModel):
+    result = trajectory_collection.find_one_and_update({"_id": ObjectId(id)}, {"$set": {"number_of_products": trajectory.number_of_products}})
+    if not result:
+        raise HTTPException(status_code=404, detail="Trajectory not found")
 
 
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import ValidationError
-from db.db import mission_collection
+from db.db import mission_collection, trajectory_collection
 from models.mission import MissionModel
 from schemas.schemas import list_mission_serial, individual_mission_serial
 from bson import ObjectId
@@ -10,8 +10,7 @@ route = APIRouter()
 @route.get('/')
 async def get_all_missions():
     try: 
-        missions = list_mission_serial(mission_collection.find())
-        return missions
+        return list_mission_serial(mission_collection.find())
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
@@ -24,6 +23,20 @@ async def get_mission_by_id(id: str):
         return individual_mission_serial(mission)
     else:
         raise HTTPException(status_code=404, detail="Mission not found")    
+
+
+
+@route.get('/trajectory/{id}')
+async def get_mission_trajectory_by_id(id: str):
+    mission = mission_collection.find_one({"trajectory_id": int(id)})
+    if mission:
+        mission_trajectory = trajectory_collection.find_one({"_id": ObjectId(mission["trajectory_id"])})
+        if mission_trajectory:
+            return mission_trajectory
+        else:
+            raise HTTPException(status_code=404, detail="Trajectory not found")
+    else:
+        raise HTTPException(status_code=404, detail="Mission not found")
 
 
 
