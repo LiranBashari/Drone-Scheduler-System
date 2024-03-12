@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 class MissionModel(BaseModel):
-    trajectory_id: int
+    trajectory_id: str
     duration: int
     priority: int
 

@@ -20,7 +20,7 @@ except Exception as e:
 
 # Create a thread object from the mission_firing_thread function and start the thread
 mission_thread = Thread(target=mission_firing_thread)
-mission_thread.start()
+# mission_thread.start()
 
 
 app.include_router(drone_routes.route, prefix="/drone")

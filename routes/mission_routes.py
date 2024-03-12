@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import ValidationError
 from db.db import mission_collection, trajectory_collection
 from models.mission import MissionModel
-from schemas.schemas import list_mission_serial, individual_mission_serial
+from schemas.schemas import list_mission_serial, individual_mission_serial, individual_trajectory_serial
 from bson import ObjectId
 
 route = APIRouter()
@@ -28,9 +28,9 @@ async def get_mission_by_id(id: str):
 
 @route.get('/trajectory/{id}')
 async def get_mission_trajectory_by_id(id: str):
-    mission = mission_collection.find_one({"trajectory_id": int(id)})
+    mission = mission_collection.find_one({"trajectory_id": id})
     if mission:
-        mission_trajectory = trajectory_collection.find_one({"_id": ObjectId(mission["trajectory_id"])})
+        mission_trajectory = individual_trajectory_serial(trajectory_collection.find_one({"_id": ObjectId(mission["trajectory_id"])}))
         if mission_trajectory:
             return mission_trajectory
         else:
@@ -64,6 +64,13 @@ async def update_mission_by_id(id: str, mission: MissionModel):
     if not result:
         raise HTTPException(status_code=404, detail="Mission not found")
 
+
+
+@route.put("/update/priority/{id}")
+async def update_mission_priority_by_id(id: str, mission: MissionModel):
+    result = mission_collection.find_one_and_update({"_id": ObjectId(id)}, {"$set": {"priority": mission.priority}})
+    if not result:
+        raise HTTPException(status_code=404, detail="Mission not found")
 
 
 

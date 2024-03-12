@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import ValidationError
 from db.db import trajectory_collection
 from models.trajectory import TrajectoryModel
-from schemas.schemas import list_trajectory_serial
+from schemas.schemas import list_trajectory_serial, individual_trajectory_serial
 from bson import ObjectId
 
 route = APIRouter()
@@ -18,7 +18,7 @@ async def get_all_trajectories():
 
 @route.get('/{id}')
 async def get_trajectory_by_id(id: str):
-    trajectory = trajectory_collection.find({"_id": ObjectId(id)})
+    trajectory = individual_trajectory_serial(trajectory_collection.find_one({"_id": ObjectId(id)}))
     if trajectory:
         return trajectory
     else:
