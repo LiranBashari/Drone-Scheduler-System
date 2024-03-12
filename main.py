@@ -3,8 +3,7 @@ from db.db import client
 from routes import drone_routes, trajectory_routes, mission_routes, schedule_routes
 import logging
 from background_tasks import mission_firing_thread
-from threading import Thread
-
+import asyncio
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -17,10 +16,8 @@ try:
 except Exception as e:
     print(e)
 
-
-# Create a thread object from the mission_firing_thread function and start the thread
-mission_thread = Thread(target=mission_firing_thread)
-# mission_thread.start()
+# Start the mission firing thread as a background task
+asyncio.create_task(mission_firing_thread())
 
 
 app.include_router(drone_routes.route, prefix="/drone")
