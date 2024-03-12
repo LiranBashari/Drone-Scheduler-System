@@ -8,18 +8,15 @@ import asyncio
 from bson import ObjectId
 
 load_dotenv()
-thread_interval = int(os.getenv("THREAD_INTERVAL"))
 
+thread_interval = int(os.getenv("THREAD_INTERVAL"))
 
 async def mission_firing_thread():
     while True:
         try:
             current_datetime = datetime.utcnow()
-            print(f"Current datetime: {current_datetime}")
-
             # Compare only the date and time components without microseconds
             missions_to_start = list_schedule_serial(schedule_collection.find({"start_time": {"$lte": current_datetime}, "status": "scheduled"}))
-            print(missions_to_start)
             start_tasks = []
             for mission in missions_to_start:
                 # Update drone status to "on a mission"
@@ -38,6 +35,7 @@ async def mission_firing_thread():
 
             await asyncio.gather(*complete_tasks, *complete_tasks)
             await asyncio.sleep(thread_interval)
+            print("Mission Firring Mechanism running")
         except Exception as e:
             print(f"An error occurred: {e}")
 

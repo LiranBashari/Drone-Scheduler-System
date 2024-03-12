@@ -70,11 +70,12 @@ async def get_schedules_within_range(start_date: str, end_date: str):
 
 @route.post('/add')
 async def add_new_schedule(schedule: ScheduleModel):
+    # first check edge cases before create new schedule
+    await check_drone_mission_compatibility(schedule)
+    await check_mission_overlap_prevention(schedule)
+    await check_unique_mission_execution(schedule)
+    
     try:
-        await check_drone_mission_compatibility(schedule)
-        await check_mission_overlap_prevention(schedule)
-        await check_unique_mission_execution(schedule)
-        
         #  A notification when scheduled drone is going on its mission
         print(f"Alert: Drone {schedule.drone_id} is going on a mission at {schedule.start_time}")
         
@@ -108,8 +109,12 @@ async def delete_schedule_by_id(id: str):
     
 async def check_drone_mission_compatibility(schedule):
     drone = individual_drone_serial(drone_collection.find_one({"_id": ObjectId(schedule.drone_id)}))
-    if not drone or drone["current_mission_id"] not in drone["possible_missions_ids"]:
-        raise HTTPException(status_code=400, detail="Drone is not compatible with the mission")
+    if drone:
+        if schedule.mission_id not in drone["possible_missions_ids"]:
+            
+            raise HTTPException(status_code=400, detail="Drone is not compatible with the mission")
+    else:
+        raise HTTPException(status_code=400, detail="Drone is not found")
 
 
 async def check_mission_overlap_prevention(schedule):
