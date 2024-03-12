@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import ValidationError
 from db.db import schedule_collection, drone_collection, mission_collection, trajectory_collection
 from models.schedule import ScheduleModel
-from schemas.schemas import list_schedule_serial, individual_schedule_serial, individual_drone_serial, list_mission_serial, individual_mission_serial, individual_trajectory_serial
+from schemas.schemas import list_schedule_serial, individual_schedule_serial, individual_drone_serial, list_mission_serial
 from bson import ObjectId
 from datetime import datetime
 
@@ -16,7 +16,6 @@ async def get_all_schedules():
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-
 @route.get('/{id}')
 async def get_schedule_by_id(id: str):
     schedule = individual_schedule_serial(schedule_collection.find_one({"_id": ObjectId(id)}))
@@ -24,7 +23,6 @@ async def get_schedule_by_id(id: str):
         return schedule
     else:
         raise HTTPException(status_code=404, detail="Schedule not found")
-    
 
 
 @route.get('/drone/{id}')
@@ -36,7 +34,6 @@ async def get_schedules_by_drone_id(id: str):
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-
 @route.get('/mission/{id}')
 async def get_schedules_by_mission_id(id: str):
     try:
@@ -44,7 +41,6 @@ async def get_schedules_by_mission_id(id: str):
         return schedules
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
-    
 
 
 @route.get('/status/{status}')
@@ -54,7 +50,6 @@ async def get_schedules_by_status(status: str):
         return schedules
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
-
 
 
 @route.post('/range')
@@ -74,7 +69,7 @@ async def add_new_schedule(schedule: ScheduleModel):
     await check_drone_mission_compatibility(schedule)
     await check_mission_overlap_prevention(schedule)
     await check_unique_mission_execution(schedule)
-    
+
     try:
         #  A notification when scheduled drone is going on its mission
         print(f"Alert: Drone {schedule.drone_id} is going on a mission at {schedule.start_time}")
@@ -87,13 +82,11 @@ async def add_new_schedule(schedule: ScheduleModel):
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-
 @route.put("/update/{id}")
 async def update_schedule_by_id(id: str, schedule: ScheduleModel):
     result = schedule_collection.find_one_and_update({"_id": ObjectId(id)}, {"$set": dict(schedule)})
     if not result:
         raise HTTPException(status_code=404, detail="Schedule not found")
-
 
 
 @route.delete("/delete/{id}")
@@ -102,8 +95,6 @@ async def delete_schedule_by_id(id: str):
     if not result:
         raise HTTPException(status_code=404, detail="Schedule not found")
     
-
-
 
 #  -----------------------Validations-------------------------------
     
@@ -127,6 +118,7 @@ async def check_mission_overlap_prevention(schedule):
     if len(ongoing_missions) > 0:
         raise HTTPException(status_code=409, detail="Drone cannot be assigned to two missions simultaneously")
 
+
 async def check_unique_mission_execution(schedule):
     missions_description = set()
     schedules_within_the_range = list_mission_serial(mission_collection.find({
@@ -145,7 +137,6 @@ async def check_unique_mission_execution(schedule):
                         raise HTTPException(status_code=409, detail="Two missions with the same description cannot be executed at the same time")
                     else:
                         missions_description.add(description)
-    return True
 
 
         

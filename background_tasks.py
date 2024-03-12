@@ -14,8 +14,9 @@ thread_interval = int(os.getenv("THREAD_INTERVAL"))
 async def mission_firing_thread():
     while True:
         try:
+            # get current time for comparison
             current_datetime = datetime.utcnow()
-            # Compare only the date and time components without microseconds
+
             missions_to_start = list_schedule_serial(schedule_collection.find({"start_time": {"$lte": current_datetime}, "status": "scheduled"}))
             start_tasks = []
             for mission in missions_to_start:
@@ -32,7 +33,7 @@ async def mission_firing_thread():
                 complete_tasks.append(drone_collection.update_one({"_id": ObjectId(mission["drone_id"])}, {"$set": {"status": "available"}}))
                 # Update mission status to "completed"
                 complete_tasks.append(schedule_collection.update_one({"mission_id": mission["mission_id"]}, {"$set": {"status": "completed"}}))
-
+                
             await asyncio.gather(*complete_tasks, *complete_tasks)
             await asyncio.sleep(thread_interval)
             print("Mission Firring Mechanism running")

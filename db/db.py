@@ -7,7 +7,6 @@ mongo_uri = os.getenv("MONGO_URI")
 
 # Create a new client and connect to the server
 client = MongoClient(mongo_uri)
-
 db = client["WDS-DB"]
 
 # Define collections

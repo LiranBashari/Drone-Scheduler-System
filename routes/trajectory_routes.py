@@ -15,7 +15,6 @@ async def get_all_trajectories():
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-
 @route.get('/{id}')
 async def get_trajectory_by_id(id: str):
     trajectory = individual_trajectory_serial(trajectory_collection.find_one({"_id": ObjectId(id)}))
@@ -25,7 +24,6 @@ async def get_trajectory_by_id(id: str):
         raise HTTPException(status_code=404, detail="Trajectory not found")
 
 
-
 @route.get('/type/{type}')
 async def get_trajectory_by_type(type: str):
     try: 
@@ -33,7 +31,6 @@ async def get_trajectory_by_type(type: str):
         return trajectories
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
-
 
 
 @route.post('/add')
@@ -46,7 +43,6 @@ async def add_new_trajectory(trajectory: TrajectoryModel):
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-
 @route.put("/update/{id}")
 async def update_trajectory_by_id(id: str, trajectory: TrajectoryModel):
     result = trajectory_collection.find_one_and_update({"_id": ObjectId(id)}, {"$set": dict(trajectory)})
@@ -54,13 +50,11 @@ async def update_trajectory_by_id(id: str, trajectory: TrajectoryModel):
         raise HTTPException(status_code=404, detail="Trajectory not found")
 
 
-
 @route.put("/update/products/{id}")
 async def update_trajectory_products_by_id(id: str, trajectory: TrajectoryModel):
     result = trajectory_collection.find_one_and_update({"_id": ObjectId(id)}, {"$set": {"number_of_products": trajectory.number_of_products}})
     if not result:
         raise HTTPException(status_code=404, detail="Trajectory not found")
-
 
 
 @route.delete("/delete/{id}")
