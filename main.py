@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from db.db import client
 from routes import drone_routes, trajectory_routes, mission_routes, schedule_routes
-from db.db import drone_collection, schedule_collection, mission_collection
 import logging
+from background_tasks import mission_firing_thread
+from threading import Thread
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -15,6 +16,12 @@ try:
     print("Pinged your deployment. You successfully connected to MongoDB!")
 except Exception as e:
     print(e)
+
+
+# Create a thread object from the mission_firing_thread function and start the thread
+mission_thread = Thread(target=mission_firing_thread)
+mission_thread.start()
+
 
 app.include_router(drone_routes.route, prefix="/drone")
 app.include_router(trajectory_routes.route, prefix="/trajectory")

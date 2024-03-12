@@ -27,7 +27,7 @@ async def get_schedule_by_id(id: str):
     
 
 
-@route.get('/drones/{id}')
+@route.get('/drone/{id}')
 async def get_schedules_by_drone_id(id: int):
     try:
         schedules = list_schedule_serial(schedule_collection.find({"drone_id": id}))
@@ -37,7 +37,7 @@ async def get_schedules_by_drone_id(id: int):
 
 
 
-@route.get('/missions/{id}')
+@route.get('/mission/{id}')
 async def get_schedules_by_mission_id(id: int):
     try:
         schedules = list_schedule_serial(schedule_collection.find({"mission_id": id}))
@@ -71,11 +71,10 @@ async def get_schedules_within_range(start_date: str, end_date: str):
 @route.post('/add')
 async def add_new_schedule(schedule: ScheduleModel):
     try:
-        check_compatible_missions(schedule)
-        check_overlapping_missions(schedule)
+        check_drone_mission_compatibility(schedule)
         check_mission_overlap_prevention(schedule)
         check_unique_mission_execution(schedule)
-
+        
         # "mission firing" mechanism - Update the drone's status in the database
         schedule_collection.update_one(
             {"drone_id": schedule.drone_id, "start_time": schedule.start_time},
@@ -112,27 +111,19 @@ async def delete_schedule_by_id(id: str):
 
 
 #  -----------------------Validations-------------------------------
-def check_compatible_missions(schedule):
-    compatible_missions = drone_collection.find_one({"_id": schedule.drone_id, "possible_missions": schedule.mission_id})
-    if not compatible_missions:
-        raise HTTPException(status_code=409, detail="Drone not compatible with the mission")
-
-
-def check_overlapping_missions(schedule):
-    overlapping_missions = schedule_collection.find({
-        "drone_id": schedule.drone_id,
-        "start_time": {"$lte": schedule.end_time},
-        "end_time": {"$gte": schedule.start_time}
-    })
-    if overlapping_missions.count() > 0:
-        raise HTTPException(status_code=409, detail="Drone already booked for another mission")
+    
+def check_drone_mission_compatibility(drone_id):
+    drone = drone_collection.find_one({"_id": drone_id})
+    if drone and drone["current_mission_id"] not in drone["possible_missions_ids"]:
+        raise HTTPException(status_code=400, detail="Drone is not compatible with the mission")
+    return True
 
 
 def check_mission_overlap_prevention(schedule):
     ongoing_missions = schedule_collection.find({
         "drone_id": schedule.drone_id,
-        "start_time": {"$lte": schedule.start_time},
-        "end_time": {"$gt": schedule.start_time}
+        "start_time": {"$lt": schedule.end_time},
+        "end_time": {"$gte": schedule.start_time}
     })
     if ongoing_missions.count() > 0:
         raise HTTPException(status_code=409, detail="Drone cannot be assigned to two missions simultaneously")
@@ -141,9 +132,9 @@ def check_mission_overlap_prevention(schedule):
 def check_unique_mission_execution(schedule):
     overlapping_descriptions = schedule_collection.find({
         "description": schedule.description,
-        "start_time": {"$lte": schedule.end_time},
-        "end_time": {"$gte": schedule.start_time}
+        "start_time": {"$lt": schedule.end_time},
+        "end_time": {"$gt": schedule.start_time}
     })
     if overlapping_descriptions.count() > 0:
         raise HTTPException(status_code=409, detail="Two missions with the same description cannot be executed at the same time")
-
+    return True
